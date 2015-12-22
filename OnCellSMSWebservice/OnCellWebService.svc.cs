@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using log4net;
 
 namespace OnCellSMSWebservice
@@ -7,17 +9,22 @@ namespace OnCellSMSWebservice
     public class OnCellWebService : IOnCellWebService
     {
         private static readonly ILog _log = LogManager.GetLogger(typeof(OnCellWebService));
+        private static QueueProcessor queueProcessor = QueueProcessor.GetInstance();
 
         public void SmsTo(string phoneNumbers, string message)
         {
-            Console.WriteLine(phoneNumbers.Split(','));
-            Console.WriteLine(message);
-            var comport = "COM5";
-            foreach (var phone in phoneNumbers.Split(','))
+            Task.Run(() =>
             {
-                _log.Debug("Sending message to " + phone + " via " + comport);
-                OnCellConnector.SendMessageToSerialPort(comport, phone, message);
-            }
+                foreach (var phone in phoneNumbers.Split(','))
+                {
+                    _log.Debug("Queueing message to " + phone);
+                    queueProcessor.AddSmsMessageTask(new SmsMessage()
+                    {
+                        PhoneNumber = phone,
+                        Message = message
+                    });
+                }
+            });
         }
     }
 }

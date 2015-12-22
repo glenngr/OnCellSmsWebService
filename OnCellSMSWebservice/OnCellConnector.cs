@@ -11,7 +11,7 @@ namespace OnCellSMSWebservice
         private static readonly string CtrlZ = char.ConvertFromUtf32(26);
         private static readonly string newLine = "\r\n";
 
-        public static void SendMessageToSerialPort(string serialPort, string phoneNumber, string message)
+        public static void SendMessageToSerialPort(string serialPort, SmsMessage smsMessage)
         {
             var serial = new SerialPortInterface(serialPort, 9600);
 
@@ -40,16 +40,16 @@ namespace OnCellSMSWebservice
 
             // Phone number to send to
             _log.Debug("Sending phonenumber");
-            if (!serial.Send("at+cmgs=" + phoneNumber + newLine))
+            if (!serial.Send("at+cmgs=" + smsMessage.PhoneNumber + newLine))
             {
-                LogErrorAndWriteToConsole("Error while setting phonenumber to " + phoneNumber);
+                LogErrorAndWriteToConsole("Error while setting phonenumber to " + smsMessage.PhoneNumber);
                 return;
             }
             _log.Debug("Phone number set OK");
             Thread.Sleep(250);
 
             _log.Debug("Sending message");
-            if (!serial.Send(message + newLine))
+            if (!serial.Send(smsMessage.Message + newLine))
             {
                 LogErrorAndWriteToConsole("Error while sending message to serial port");
                 return;
