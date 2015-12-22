@@ -46,10 +46,9 @@ namespace OnCellSMSWebservice
 
         public void AddSmsMessageTask(SmsMessage smsMessage)
         {
-            var comPort = "COM5";
            Task t = _factory.StartNew(() =>
             {
-                OnCellConnector.SendMessageToSerialPort(comPort, smsMessage);
+                OnCellConnector.SendMessageToSerialPort(smsMessage);
             }, _cts.Token);
 
             _tasks.Add(t);

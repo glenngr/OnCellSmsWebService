@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading;
 using log4net;
 
@@ -11,9 +12,20 @@ namespace OnCellSMSWebservice
         private static readonly string CtrlZ = char.ConvertFromUtf32(26);
         private static readonly string newLine = "\r\n";
 
-        public static void SendMessageToSerialPort(string serialPort, SmsMessage smsMessage)
+        /// <summary>
+        /// Connect to serial port and send sms message to a phone number.
+        /// </summary>
+        /// <param name="smsMessage">The SmsMessage object with phone number and message</param>
+        public static void SendMessageToSerialPort(SmsMessage smsMessage)
         {
-            var serial = new SerialPortInterface(serialPort, 9600);
+            // Get config from web.config
+            var serialPort = ConfigurationManager.AppSettings["SerialPort"];
+            if (serialPort == null || !serialPort.ToUpper().Contains("COM"))
+            {
+                throw new ConfigurationErrorsException("Missing or invalid serial port configuration in Web.config");
+            }
+
+            var serial = new SerialPortInterface(serialPort.ToUpper(), 9600);
 
             _log.Debug("Opening serial port " + serialPort);
             if (!serial.Open())
