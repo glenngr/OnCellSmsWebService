@@ -63,5 +63,14 @@ namespace OnCellSMSWebservice
         {
             return Instance;
         }
+
+        /// <summary>
+        /// Get the current queuesize
+        /// </summary>
+        /// <returns>Queue size</returns>
+        public int GetQueueSize()
+        {
+            return _lcts.GetNumberOfQueuedTasks();
+        }
     }
 }

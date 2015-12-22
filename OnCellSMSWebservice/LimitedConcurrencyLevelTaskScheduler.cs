@@ -36,6 +36,13 @@ namespace OnCellSMSWebservice
             _maxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
+        public int GetNumberOfQueuedTasks()
+        {
+            lock (_tasks)
+            {
+                return _tasks.Count;
+            }
+        }
         // Queues a task to the scheduler. 
         protected sealed override void QueueTask(Task task)
         {

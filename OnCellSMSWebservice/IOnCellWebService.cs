@@ -16,5 +16,9 @@ namespace OnCellSMSWebservice
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "invoke", BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         void SmsTo(string phoneNumbers, string message);
+
+        [OperationContract]
+        [XmlSerializerFormat]
+        int GetSmsQueueSize();
     }
 }

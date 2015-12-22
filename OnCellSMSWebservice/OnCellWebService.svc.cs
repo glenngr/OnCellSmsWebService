@@ -9,7 +9,7 @@ namespace OnCellSMSWebservice
     public class OnCellWebService : IOnCellWebService
     {
         private static readonly ILog _log = LogManager.GetLogger(typeof(OnCellWebService));
-        private static QueueProcessor queueProcessor = QueueProcessor.GetInstance();
+        private static QueueProcessor _queueProcessor = QueueProcessor.GetInstance();
 
         public void SmsTo(string phoneNumbers, string message)
         {
@@ -18,13 +18,22 @@ namespace OnCellSMSWebservice
                 foreach (var phone in phoneNumbers.Split(','))
                 {
                     _log.Debug("Queueing message to " + phone);
-                    queueProcessor.AddSmsMessageTask(new SmsMessage()
+                    _queueProcessor.AddSmsMessageTask(new SmsMessage()
                     {
                         PhoneNumber = phone,
                         Message = message
                     });
                 }
             });
+        }
+
+        /// <summary>
+        /// Get the SMS Queue Size
+        /// </summary>
+        /// <returns>SMS Queue Size</returns>
+        public int GetSmsQueueSize()
+        {
+            return _queueProcessor.GetQueueSize();
         }
     }
 }
