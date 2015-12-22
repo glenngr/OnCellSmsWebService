@@ -30,7 +30,7 @@ namespace OnCellSMSWebservice
             _log.Debug("Opening serial port " + serialPort);
             if (!serial.Open())
             {
-                LogErrorAndWriteToConsole("Error while opening serial port " + serialPort);
+                _log.Error("Error while opening serial port " + serialPort);
             }
             else
             {
@@ -42,7 +42,7 @@ namespace OnCellSMSWebservice
             _log.Debug("Initializing modem");
             if (!serial.Send(ATInitializeCommand + newLine))
             {
-                LogErrorAndWriteToConsole("Error while initializing modem with AT command: " + ATInitializeCommand);
+                _log.Error("Error while initializing modem with AT command: " + ATInitializeCommand);
                 return;
             }
 
@@ -54,16 +54,16 @@ namespace OnCellSMSWebservice
             _log.Debug("Sending phonenumber");
             if (!serial.Send("at+cmgs=" + smsMessage.PhoneNumber + newLine))
             {
-                LogErrorAndWriteToConsole("Error while setting phonenumber to " + smsMessage.PhoneNumber);
+                _log.Error("Error while setting phonenumber to " + smsMessage.PhoneNumber);
                 return;
             }
             _log.Debug("Phone number set OK");
             Thread.Sleep(250);
 
             _log.Debug("Sending message");
-            if (!serial.Send(smsMessage.Message + newLine))
+            if (!serial.Send(smsMessage.Message))
             {
-                LogErrorAndWriteToConsole("Error while sending message to serial port");
+                _log.Error("Error while sending message to serial port");
                 return;
             }
             _log.Debug("Message set OK");
@@ -73,19 +73,13 @@ namespace OnCellSMSWebservice
             _log.Debug("Trying to end message");
             if (!serial.Send(CtrlZ))
             {
-                LogErrorAndWriteToConsole("Error sending CTRL-Z to serial port");
+                _log.Error("Error sending CTRL-Z to serial port");
             }
             _log.Debug("Message ended OK with CTRL-Z");
             Thread.Sleep(250);
 
             _log.Debug("Closing serial connection");
             serial.Close();
-        }
-
-        private static void LogErrorAndWriteToConsole(string message)
-        {
-            _log.Error(message);
-            Console.WriteLine(message);
         }
     }
 }
